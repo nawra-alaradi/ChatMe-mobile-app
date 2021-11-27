@@ -1,18 +1,28 @@
+import 'dart:io';
+import 'dart:math';
 import 'package:chat_me/business_logic/auth_provider.dart';
 import 'package:chat_me/business_logic/user_model.dart';
+import 'package:chat_me/components/cached_image.dart';
+import 'package:chat_me/enum/view_state.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_me/components/custom_appbar.dart';
 import 'package:chat_me/components/custom_tile.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_me/business_logic/message.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:chat_me/universal_colors.dart';
+// import 'package:flutter/services.dart';
+import 'package:chat_me/business_logic/image_upload_provider.dart';
+import 'package:chat_me/business_logic/storage_methods.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatUser receiver;
   static const String id = 'ChatScreen';
-  ChatScreen({required this.receiver});
+  ChatScreen({Key? key, required this.receiver}) : super(key: key);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -24,6 +34,8 @@ class _ChatScreenState extends State<ChatScreen> {
   ChatUser? sender;
   String _currentUserId = "  ";
   FocusNode textFieldFocus = FocusNode();
+  StorageMethods storageMethods = StorageMethods();
+  late ImageUploadProvider _imageUploadProvider;
 
   bool isWriting = false;
   bool showEmojiPicker = false;
@@ -34,12 +46,66 @@ class _ChatScreenState extends State<ChatScreen> {
     didChangeDependencies();
   }
 
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     sender = Provider.of<AuthProvider>(context, listen: false).userModel;
     _currentUserId =
         Provider.of<AuthProvider>(context, listen: false).userModel.uid!;
     print('current userid $_currentUserId');
+  }
+
+  void pickImage({required ImageSource source}) async {
+    File? selectedImage = await StorageMethods().pickImage(source: source);
+    if (selectedImage != null) {
+      storageMethods.uploadImage(
+          image: selectedImage,
+          receiverId: widget.receiver.uid!,
+          senderId: _currentUserId,
+          imageUploadProvider: _imageUploadProvider);
+    }
+  }
+
+  Future<bool> requestCameraPermission() async {
+    final serviceStatus = await Permission.camera.isGranted;
+
+    bool isCameraOn = serviceStatus == ServiceStatus.enabled;
+
+    final status = await Permission.camera.request();
+
+    if (status == PermissionStatus.granted) {
+      print('Permission Granted');
+      return true;
+    } else if (status == PermissionStatus.denied) {
+      print('Permission denied');
+      return false;
+    } else if (status == PermissionStatus.permanentlyDenied) {
+      print('Permission Permanently Denied');
+      return false;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> requestPhotosPermission() async {
+    final serviceStatus = await Permission.storage.isGranted;
+
+    bool isGalleryOn = serviceStatus == ServiceStatus.enabled;
+
+    final status = await Permission.storage.request();
+
+    if (status == PermissionStatus.granted) {
+      print('Permission Granted');
+      return true;
+    } else if (status == PermissionStatus.denied) {
+      print('Permission denied');
+      return false;
+    } else if (status == PermissionStatus.permanentlyDenied) {
+      print('Permission Permanently Denied');
+      return false;
+    } else {
+      return false;
+    }
   }
 
   showKeyboard() => textFieldFocus.requestFocus();
@@ -60,6 +126,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _imageUploadProvider =
+        Provider.of<ImageUploadProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: Color(0xFFE1E2E1),
       appBar: customAppBar(context),
@@ -68,8 +136,13 @@ class _ChatScreenState extends State<ChatScreen> {
           Flexible(
             child: messageList(),
           ),
+          _imageUploadProvider.getViewState == ViewState.LOADING
+              ? Container(
+                  alignment: Alignment.centerRight,
+                  margin: EdgeInsets.only(right: 15.w),
+                  child: CircularProgressIndicator())
+              : Container(),
           chatControls(),
-          // showEmojiPicker ? Container(child: emojiContainer()) : Container(),
         ],
       ),
     );
@@ -94,20 +167,20 @@ class _ChatScreenState extends State<ChatScreen> {
         //     curve: Curves.easeInOut,
         //   );
         // });
-        print('I am here');
+        // print('I am here');
         return ListView.builder(
           reverse: true,
           controller: _listScrollController,
           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
           itemCount: snapshot.data == null ? 0 : snapshot.data!.docs.length,
           itemBuilder: (context, index) {
-            print(index);
-            print('why ? ${snapshot.data!.docs[index]}');
+            // print(index);
+            // print('why ? ${snapshot.data!.docs[index]}');
             if (snapshot.data != null) {
-              print(" this part");
+              // print(" this part");
               return chatMessageItem(snapshot.data!.docs[index]);
             } else {
-              print('i am here');
+              // print('i am here');
               return Center(
                 child: Text(
                   "No messages are sent",
@@ -123,8 +196,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget chatMessageItem(DocumentSnapshot snapshot) {
     Message _message = Message.fromMap(snapshot.data() as Map<String, dynamic>);
-    print('message $_message');
-    print('I am in chatmessageitem');
+    // print('message $_message');
+    // print('I am in chatmessageitem');
     return Container(
       margin: EdgeInsets.symmetric(vertical: 15.h),
       child: Container(
@@ -161,13 +234,17 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   getMessage(Message message) {
-    return Text(
-      message.message,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 16.sp,
-      ),
-    );
+    return (message.type != "image")
+        ? Text(
+            message.message,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16.sp,
+            ),
+          )
+        : message.photoUrl != ""
+            ? CachedImage(url: message.photoUrl)
+            : Text("Url was null");
   }
 
   Widget receiverLayout(Message message) {
@@ -238,15 +315,27 @@ class _ChatScreenState extends State<ChatScreen> {
                 Flexible(
                   child: ListView(
                     children: <Widget>[
-                      ModalTile(
-                        title: "Media",
-                        subtitle: "Share Photos from gallery",
-                        icon: Icons.image,
+                      GestureDetector(
+                        onTap: () async {
+                          pickImage(source: ImageSource.gallery);
+                          Navigator.pop(context);
+                        },
+                        child: ModalTile(
+                          title: "Media",
+                          subtitle: "Share Photos from gallery",
+                          icon: Icons.image,
+                        ),
                       ),
-                      ModalTile(
-                          title: "Camer",
-                          subtitle: "Share Photos from camera",
-                          icon: Icons.camera_alt),
+                      GestureDetector(
+                        onTap: () async {
+                          pickImage(source: ImageSource.camera);
+                          Navigator.pop(context);
+                        },
+                        child: ModalTile(
+                            title: "Camera",
+                            subtitle: "Share Photos from camera",
+                            icon: Icons.camera_alt),
+                      ),
                     ],
                   ),
                 ),
@@ -259,12 +348,12 @@ class _ChatScreenState extends State<ChatScreen> {
       var text = textFieldController.text;
       print(text);
       Message _message = Message(
-        receiverId: widget.receiver.uid ?? "",
-        senderId: sender!.uid ?? "",
-        message: text,
-        timestamp: Timestamp.now(),
-        type: 'text',
-      );
+          receiverId: widget.receiver.uid ?? "",
+          senderId: sender!.uid ?? "",
+          message: text,
+          timestamp: Timestamp.now(),
+          type: 'text',
+          photoUrl: "");
 
       setState(() {
         isWriting = false;
@@ -305,7 +394,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: () => hideEmojiContainer(),
                   style: TextStyle(color: Colors.white, fontSize: 18.sp),
                   onChanged: (val) {
-                    (val.length > 0 && val.trim() != "")
+                    (val.isNotEmpty && val.trim() != "")
                         ? setWritingTo(true)
                         : setWritingTo(false);
                   },
@@ -365,20 +454,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 widget.receiver.name!.substring(1)
             : "No name",
       ),
-      actions: <Widget>[
-        // IconButton(
-        //   icon: Icon(
-        //     Icons.video_call,
-        //   ),
-        //   onPressed: () {},
-        // ),
-        // IconButton(
-        //   icon: Icon(
-        //     Icons.phone,
-        //   ),
-        //   onPressed: () {},
-        // )
-      ],
+      actions: const <Widget>[],
     );
   }
 }
@@ -389,10 +465,11 @@ class ModalTile extends StatelessWidget {
   final IconData icon;
 
   const ModalTile({
+    Key? key,
     required this.title,
     required this.subtitle,
     required this.icon,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -23,7 +23,7 @@ class CustomTile extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.mini = true,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

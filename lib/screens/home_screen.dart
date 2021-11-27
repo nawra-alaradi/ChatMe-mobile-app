@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_me/business_logic/user_model.dart';
 import 'package:chat_me/business_logic/auth_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -31,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     didChangeDependencies();
   }
 
+  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     User? currentUser = Provider.of<AuthProvider>(context, listen: false).user;
@@ -148,14 +148,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         )));
           },
           leading: CircleAvatar(
-            child: Text(searchedUser.name == null ? "" : searchedUser.name![0]),
+            child: Text(searchedUser.name == null
+                ? ""
+                : searchedUser.name![0].toUpperCase()),
             // backgroundImage: NetworkImage(searchedUser.profilePhoto ?? ""),
             backgroundColor: Colors.grey,
           ),
           title: Text(
-            searchedUser.name ?? "",
+            searchedUser.name != null ? searchedUser.name!.toUpperCase() : "",
             style: const TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
           ),

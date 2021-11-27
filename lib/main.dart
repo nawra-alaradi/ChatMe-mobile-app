@@ -1,4 +1,3 @@
-import 'package:chat_me/screens/chat_screen.dart';
 import 'package:chat_me/screens/email_screen.dart';
 import 'package:chat_me/screens/home_screen.dart';
 import 'package:chat_me/screens/login_screen.dart';
@@ -13,7 +12,7 @@ import 'package:provider/provider.dart';
 
 import 'business_logic/auth_provider.dart';
 import 'business_logic/firebase_initialization.dart';
-import 'business_logic/user_model.dart';
+import 'business_logic/image_upload_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,8 +38,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(360, 640),
-      builder: () => ChangeNotifierProvider(
-        create: (_) => AuthProvider(),
+      builder: () => MultiProvider(
+        providers: [
+          ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
+          ChangeNotifierProvider<ImageUploadProvider>(
+              create: (_) => ImageUploadProvider())
+        ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',

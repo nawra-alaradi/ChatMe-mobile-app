@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-// import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -150,4 +149,10 @@ class AuthProvider with ChangeNotifier {
         .collection(message.senderId)
         .add(map);
   }
+
+  // static String formatDateString(String dateString) {
+  //   DateTime dateTime = DateTime.parse(dateString);
+  //   var formatter = DateFormat('dd/MM/yy');
+  //   return formatter.format(dateTime);
+  // }
 }
