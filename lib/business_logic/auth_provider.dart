@@ -4,24 +4,54 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'user_model.dart';
 import 'message.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthProvider with ChangeNotifier {
   final CollectionReference _firestore =
       FirebaseFirestore.instance.collection('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? _user;
-
   ChatUser _chatUser = ChatUser(uid: "", name: "", gender: "", email: "");
+  // Create storage
+  final storage = const FlutterSecureStorage();
+
   ChatUser get userModel => _chatUser;
   FirebaseAuth get auth => _auth;
   User? get user => _user;
+
+  Future<String> onStartUp() async {
+    String retVal = "error";
+    try {
+      _user = _auth.currentUser;
+      if (_user != null && _user!.emailVerified) {
+        retVal = "success";
+        final String uid = _user!.uid;
+        print('User uid is $uid');
+        DocumentSnapshot documentDetails = await _firestore.doc(uid).get();
+        print(documentDetails.data());
+        _chatUser = ChatUser(
+            uid: _user!.uid,
+            name: documentDetails['name'],
+            gender: documentDetails['gender'],
+            email: documentDetails['email']);
+        print('name: ${_chatUser.name}');
+        print('gender: ${_chatUser.gender}');
+        print('email: ${_chatUser.email}');
+        print("${_chatUser.name} is already logged In");
+        notifyListeners();
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    return retVal;
+  }
+
   Future<String> chatUserSignIn(String? email, String? password) async {
     if (email != null && password != null) {
       try {
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
         _user = userCredential.user;
-
         if (_user != null && !_user!.emailVerified) {
           return 'Your email has not been verified. Please verify your email';
         } else {

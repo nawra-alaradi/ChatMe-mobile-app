@@ -1,5 +1,6 @@
 import 'package:chat_me/screens/email_screen.dart';
 import 'package:chat_me/screens/home_screen.dart';
+import 'package:chat_me/screens/loading_screen.dart';
 import 'package:chat_me/screens/login_screen.dart';
 import 'package:chat_me/screens/profile_screen.dart';
 import 'package:chat_me/screens/registration_screen.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-
+import 'package:chat_me/screens/startup_screen.dart';
 import 'business_logic/auth_provider.dart';
 import 'business_logic/firebase_initialization.dart';
 import 'business_logic/image_upload_provider.dart';
@@ -70,8 +71,10 @@ class MyApp extends StatelessWidget {
               ),
               textTheme:
                   TextTheme(caption: TextStyle(color: Colors.amber[10]))),
-          initialRoute: WelcomeScreen.id,
+          initialRoute: StartupScreen.id,
           routes: {
+            LoadingScreen.id: (context) => const LoadingScreen(),
+            StartupScreen.id: (context) => const StartupScreen(),
             WelcomeScreen.id: (context) => const WelcomeScreen(),
             LoginScreen.id: (context) => const LoginScreen(),
             RegistrationScreen.id: (context) => const RegistrationScreen(),
