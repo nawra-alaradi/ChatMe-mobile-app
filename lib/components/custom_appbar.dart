@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget title;
   final List<Widget> actions;
-  final Widget leading;
+  final Widget? leading;
   final bool centerTitle;
 
   CustomAppBar({
@@ -20,18 +20,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
       decoration: BoxDecoration(
-        color: const Color(0xff19191b),
+        color: Colors.black,
         border: Border(
           bottom: BorderSide(
             color: const Color(0xff272c35), //seperator color
             width: 1.4.w,
-            style: BorderStyle.solid,
+            style: BorderStyle.none,
           ),
         ),
       ),
       child: AppBar(
-        backgroundColor: const Color(0xff19191b),
-        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.black,
+        elevation: 10,
         leading: leading,
         actions: actions,
         centerTitle: centerTitle,

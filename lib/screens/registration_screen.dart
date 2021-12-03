@@ -1,4 +1,4 @@
-import 'package:chat_me/business_logic/auth_provider.dart';
+import '../business_logic/providers/auth_provider.dart';
 import 'package:chat_me/components/my_circular_progress_indicator.dart';
 import 'package:chat_me/components/my_drop_down_button.dart';
 import 'package:chat_me/components/my_elevated_button.dart';

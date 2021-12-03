@@ -1,4 +1,6 @@
-import 'package:chat_me/business_logic/auth_provider.dart';
+import 'package:chat_me/business_logic/initials_extractor.dart';
+
+import '../business_logic/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_me/constants.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,8 +72,8 @@ class ProfileScreen extends StatelessWidget {
                   child: FittedBox(
                     //TODO: Obtain first character of dr name from doctor object upon sign in
                     child: Text(
-                      userName![0].toUpperCase(),
-                      style: kCircleAvatarTextStyle.copyWith(fontSize: 150.sp),
+                      Utils.getInitials(userName!.toUpperCase()),
+                      style: kCircleAvatarTextStyle.copyWith(fontSize: 100.sp),
                     ),
                   ),
                 ),

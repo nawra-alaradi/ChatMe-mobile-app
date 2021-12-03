@@ -1,5 +1,6 @@
+import 'package:chat_me/screens/chat_list_screen.dart';
 import 'package:chat_me/screens/email_screen.dart';
-import 'package:chat_me/screens/home_screen.dart';
+import 'package:chat_me/screens/search_screen.dart';
 import 'package:chat_me/screens/loading_screen.dart';
 import 'package:chat_me/screens/login_screen.dart';
 import 'package:chat_me/screens/profile_screen.dart';
@@ -11,9 +12,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:chat_me/screens/startup_screen.dart';
-import 'business_logic/auth_provider.dart';
+import 'business_logic/providers/auth_provider.dart';
 import 'business_logic/firebase_initialization.dart';
-import 'business_logic/image_upload_provider.dart';
+import 'business_logic/providers/image_upload_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +74,7 @@ class MyApp extends StatelessWidget {
                   TextTheme(caption: TextStyle(color: Colors.amber[10]))),
           initialRoute: StartupScreen.id,
           routes: {
+            ChatListScreen.id: (context) => const ChatListScreen(),
             LoadingScreen.id: (context) => const LoadingScreen(),
             StartupScreen.id: (context) => const StartupScreen(),
             WelcomeScreen.id: (context) => const WelcomeScreen(),
@@ -81,7 +83,7 @@ class MyApp extends StatelessWidget {
             EmailScreen.id: (context) => const EmailScreen(),
             RouteScreen.id: (context) => const RouteScreen(),
             ProfileScreen.id: (context) => const ProfileScreen(),
-            HomeScreen.id: (context) => const HomeScreen(),
+            SearchScreen.id: (context) => const SearchScreen(),
           },
         ),
       ),

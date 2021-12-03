@@ -1,8 +1,8 @@
 import 'package:chat_me/components/custom_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:chat_me/business_logic/user_model.dart';
-import 'package:chat_me/business_logic/auth_provider.dart';
+import '../business_logic/models/user_model.dart';
+import '../business_logic/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:new_gradient_app_bar/new_gradient_app_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,14 +10,14 @@ import 'package:chat_me/screens/chat_screen.dart';
 
 User? loggedInUser;
 
-class HomeScreen extends StatefulWidget {
-  static const String id = 'HomeScreen';
-  const HomeScreen({Key? key}) : super(key: key);
+class SearchScreen extends StatefulWidget {
+  static const String id = 'SearchScreen';
+  const SearchScreen({Key? key}) : super(key: key);
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _SearchScreenState createState() => _SearchScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _SearchScreenState extends State<SearchScreen> {
   final _auth = FirebaseAuth.instance;
   List<ChatUser> chatUsers = [];
   String query = "";
@@ -59,13 +59,13 @@ class _HomeScreenState extends State<HomeScreen> {
   searchAppBar(BuildContext context) {
     return NewGradientAppBar(
       automaticallyImplyLeading: false,
-      gradient: LinearGradient(colors: const [
+      gradient: const LinearGradient(colors: [
         Color(0xff00b6f3),
         Color(0xff062731),
       ]),
       elevation: 0,
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(kTextTabBarHeight),
+        preferredSize: const Size.fromHeight(kTextTabBarHeight),
         child: Padding(
           padding: EdgeInsets.only(left: 20.w),
           child: TextField(
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 query = val;
               });
             },
-            cursorColor: Color(0xff19191b),
+            cursorColor: const Color(0xff19191b),
             autofocus: true,
             style: TextStyle(
               fontWeight: FontWeight.bold,
@@ -138,34 +138,39 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         print(searchedUser.uid);
         return CustomTile(
-          mini: false,
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ChatScreen(
-                          receiver: searchedUser,
-                        )));
-          },
-          leading: CircleAvatar(
-            child: Text(searchedUser.name == null
-                ? ""
-                : searchedUser.name![0].toUpperCase()),
-            // backgroundImage: NetworkImage(searchedUser.profilePhoto ?? ""),
-            backgroundColor: Colors.grey,
-          ),
-          title: Text(
-            searchedUser.name != null ? searchedUser.name!.toUpperCase() : "",
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+            mini: false,
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChatScreen(
+                            receiver: searchedUser,
+                          )));
+            },
+            leading: CircleAvatar(
+              radius: 30.r,
+              child: Text(
+                searchedUser.name == null
+                    ? ""
+                    : searchedUser.name![0].toUpperCase(),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 40.sp,
+                    fontFamily: 'Judson',
+                    fontWeight: FontWeight.w700),
+              ),
+              // backgroundImage: NetworkImage(searchedUser.profilePhoto ?? ""),
+              backgroundColor: Colors.amber,
             ),
-          ),
-          subtitle: Text(
-            searchedUser.name ?? "",
-            style: const TextStyle(color: Color(0xff8f8f8f)),
-          ),
-        );
+            title: Text(
+              searchedUser.name != null ? searchedUser.name!.toUpperCase() : "",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 25.sp,
+                  fontFamily: 'Work Sans'),
+            ),
+            subtitle: null);
       }),
     );
   }
@@ -173,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE1E2E1),
+      backgroundColor: const Color(0xFFE1E2E1),
       appBar: searchAppBar(context),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 20.w),

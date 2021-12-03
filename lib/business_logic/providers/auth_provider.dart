@@ -2,12 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'user_model.dart';
-import 'message.dart';
+import '../models/user_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthProvider with ChangeNotifier {
-  final CollectionReference _firestore =
+  final CollectionReference _userCollection =
       FirebaseFirestore.instance.collection('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? _user;
@@ -27,7 +26,7 @@ class AuthProvider with ChangeNotifier {
         retVal = "success";
         final String uid = _user!.uid;
         print('User uid is $uid');
-        DocumentSnapshot documentDetails = await _firestore.doc(uid).get();
+        DocumentSnapshot documentDetails = await _userCollection.doc(uid).get();
         print(documentDetails.data());
         _chatUser = ChatUser(
             uid: _user!.uid,
@@ -60,7 +59,8 @@ class AuthProvider with ChangeNotifier {
             //user has verified his email
             final String uid = _user!.uid;
             print('User uid is $uid');
-            DocumentSnapshot documentDetails = await _firestore.doc(uid).get();
+            DocumentSnapshot documentDetails =
+                await _userCollection.doc(uid).get();
             print(documentDetails.data());
             _chatUser = ChatUser(
                 uid: _user!.uid,
@@ -104,7 +104,7 @@ class AuthProvider with ChangeNotifier {
       }
       //create a new document inside users collection with the user credentials
       print('this part is being executed');
-      await _firestore.doc(_user!.uid).set({
+      await _userCollection.doc(_user!.uid).set({
         'uid': _user!.uid,
         'name': name,
         'gender': gender,
@@ -153,7 +153,7 @@ class AuthProvider with ChangeNotifier {
   Future<List<ChatUser>> fetchAllUsers(User currentUser) async {
     List<ChatUser> userList = [];
 
-    QuerySnapshot querySnapshot = await _firestore.get();
+    QuerySnapshot querySnapshot = await _userCollection.get();
     for (var i = 0; i < querySnapshot.docs.length; i++) {
       if (querySnapshot.docs[i].id != currentUser.uid) {
         userList.add(ChatUser.fromMap(
@@ -163,21 +163,14 @@ class AuthProvider with ChangeNotifier {
     return userList;
   }
 
-  Future<void> addMessageToDb(
-      Message message, ChatUser sender, ChatUser receiver) async {
-    Map<String, dynamic> map = message.toMap() as Map<String, dynamic>;
-    //add the message content as a document to the messages collection => senderId doc=> collection of received messages from other users
-    await FirebaseFirestore.instance
-        .collection("messages")
-        .doc(message.senderId)
-        .collection(message.receiverId)
-        .add(map);
-    //add the message content as a document to the messages collection => receiverId doc=> collection of received messages from other users
-    await FirebaseFirestore.instance
-        .collection("messages")
-        .doc(message.receiverId)
-        .collection(message.senderId)
-        .add(map);
+  Future<ChatUser> getUserDetailsById(String id) async {
+    try {
+      DocumentSnapshot documentSnapshot = await _userCollection.doc(id).get();
+      return ChatUser.fromMap(documentSnapshot.data() as Map<String, dynamic>);
+    } catch (e) {
+      print(e);
+      return ChatUser(uid: "", name: "", gender: "", email: "");
+    }
   }
 
   // static String formatDateString(String dateString) {

@@ -1,9 +1,8 @@
 import 'package:chat_me/screens/route.dart';
 import 'package:chat_me/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:chat_me/business_logic/auth_provider.dart';
+import '../business_logic/providers/auth_provider.dart';
 
 import 'loading_screen.dart';
 
@@ -28,6 +27,7 @@ class _StartupScreenState extends State<StartupScreen> {
     didChangeDependencies();
   }
 
+  @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
     //get the state and check current user, set authstatus based on state

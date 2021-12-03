@@ -5,7 +5,7 @@ class CustomTile extends StatelessWidget {
   final Widget leading;
   final Widget title;
   final Widget? icon;
-  final Widget subtitle;
+  final Widget? subtitle;
   final Widget? trailing;
   final EdgeInsets margin;
   final bool mini;
@@ -42,8 +42,8 @@ class CustomTile extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: mini ? 3.h : 20.h),
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom:
-                            BorderSide(width: 1.w, color: Color(0xff272c35)))),
+                        bottom: BorderSide(
+                            width: 1.w, color: const Color(0xff272c35)))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -55,7 +55,7 @@ class CustomTile extends StatelessWidget {
                         Row(
                           children: <Widget>[
                             icon ?? Container(),
-                            subtitle,
+                            subtitle ?? Container(),
                           ],
                         )
                       ],

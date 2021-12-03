@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'home_screen.dart';
+import 'chat_list_screen.dart';
+// import 'search_screen.dart';
 
 class RouteScreen extends StatefulWidget {
   static const String id = "Route";
@@ -16,7 +17,7 @@ class _RouteScreenState extends State<RouteScreen> {
   final PageController _pageController = PageController();
   int _selectedIndex = 0;
   final List<Widget> _screens = [
-    const HomeScreen(),
+    const ChatListScreen(),
     const ProfileScreen(),
   ];
 

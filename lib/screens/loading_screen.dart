@@ -26,10 +26,10 @@ class LoadingScreen extends StatelessWidget {
                 ),
               ),
               Center(
-                child: Container(
+                child: SizedBox(
                     height: 25.h,
                     width: 25.w,
-                    child: CircularProgressIndicator()),
+                    child: const CircularProgressIndicator()),
               ),
             ],
           ),

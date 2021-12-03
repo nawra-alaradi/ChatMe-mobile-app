@@ -1,7 +1,8 @@
 import 'dart:io';
-import 'dart:math';
-import 'package:chat_me/business_logic/auth_provider.dart';
-import 'package:chat_me/business_logic/user_model.dart';
+import 'package:chat_me/business_logic/chat_methods.dart';
+
+import '../business_logic/providers/auth_provider.dart';
+import '../business_logic/models/user_model.dart';
 import 'package:chat_me/components/cached_image.dart';
 import 'package:chat_me/enum/view_state.dart';
 import 'package:flutter/material.dart';
@@ -9,20 +10,18 @@ import 'package:chat_me/components/custom_appbar.dart';
 import 'package:chat_me/components/custom_tile.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:chat_me/business_logic/message.dart';
+import '../business_logic/models/message.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:chat_me/universal_colors.dart';
-// import 'package:flutter/services.dart';
-import 'package:chat_me/business_logic/image_upload_provider.dart';
-import 'package:chat_me/business_logic/storage_methods.dart';
+import '../business_logic/providers/image_upload_provider.dart';
+import '../business_logic/storage_methods.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatUser receiver;
   static const String id = 'ChatScreen';
-  ChatScreen({Key? key, required this.receiver}) : super(key: key);
+  const ChatScreen({Key? key, required this.receiver}) : super(key: key);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -30,7 +29,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController textFieldController = TextEditingController();
-  ScrollController _listScrollController = ScrollController();
+  final ScrollController _listScrollController = ScrollController();
   ChatUser? sender;
   String _currentUserId = "  ";
   FocusNode textFieldFocus = FocusNode();
@@ -69,8 +68,6 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<bool> requestCameraPermission() async {
     final serviceStatus = await Permission.camera.isGranted;
 
-    bool isCameraOn = serviceStatus == ServiceStatus.enabled;
-
     final status = await Permission.camera.request();
 
     if (status == PermissionStatus.granted) {
@@ -88,10 +85,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<bool> requestPhotosPermission() async {
-    final serviceStatus = await Permission.storage.isGranted;
-
-    bool isGalleryOn = serviceStatus == ServiceStatus.enabled;
-
     final status = await Permission.storage.request();
 
     if (status == PermissionStatus.granted) {
@@ -129,18 +122,18 @@ class _ChatScreenState extends State<ChatScreen> {
     _imageUploadProvider =
         Provider.of<ImageUploadProvider>(context, listen: true);
     return Scaffold(
-      backgroundColor: Color(0xFFE1E2E1),
+      backgroundColor: const Color(0xFFE1E2E1),
       appBar: customAppBar(context),
       body: Column(
         children: <Widget>[
           Flexible(
             child: messageList(),
           ),
-          _imageUploadProvider.getViewState == ViewState.LOADING
+          _imageUploadProvider.getViewState == ViewState.loading
               ? Container(
                   alignment: Alignment.centerRight,
                   margin: EdgeInsets.only(right: 15.w),
-                  child: CircularProgressIndicator())
+                  child: const CircularProgressIndicator())
               : Container(),
           chatControls(),
         ],
@@ -244,7 +237,10 @@ class _ChatScreenState extends State<ChatScreen> {
           )
         : message.photoUrl != ""
             ? CachedImage(url: message.photoUrl)
-            : Text("Url was null");
+            : Text(
+                "Url was null",
+                style: TextStyle(color: Colors.white, fontSize: 16.sp),
+              );
   }
 
   Widget receiverLayout(Message message) {
@@ -320,7 +316,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           pickImage(source: ImageSource.gallery);
                           Navigator.pop(context);
                         },
-                        child: ModalTile(
+                        child: const ModalTile(
                           title: "Media",
                           subtitle: "Share Photos from gallery",
                           icon: Icons.image,
@@ -331,7 +327,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           pickImage(source: ImageSource.camera);
                           Navigator.pop(context);
                         },
-                        child: ModalTile(
+                        child: const ModalTile(
                             title: "Camera",
                             subtitle: "Share Photos from camera",
                             icon: Icons.camera_alt),
@@ -344,7 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
           });
     }
 
-    sendMessage() {
+    sendMessage() async {
       var text = textFieldController.text;
       print(text);
       Message _message = Message(
@@ -360,8 +356,7 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       textFieldController.clear();
 
-      Provider.of<AuthProvider>(context, listen: false)
-          .addMessageToDb(_message, sender!, widget.receiver);
+      await ChatMethods().addMessageToDb(_message, sender!, widget.receiver);
     }
 
     return Container(
@@ -372,7 +367,7 @@ class _ChatScreenState extends State<ChatScreen> {
             onTap: () => addMediaModal(context),
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 5.h, horizontal: 5.w),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: UniversalColors.fabGradient,
                 shape: BoxShape.circle,
               ),
@@ -400,7 +395,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   },
                   decoration: InputDecoration(
                     hintText: "Type a message",
-                    hintStyle: TextStyle(
+                    hintStyle: const TextStyle(
                       color: UniversalColors.greyColor,
                     ),
                     border: OutlineInputBorder(
@@ -420,7 +415,7 @@ class _ChatScreenState extends State<ChatScreen> {
           isWriting
               ? Container(
                   margin: EdgeInsets.only(left: 10.w),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                       gradient: UniversalColors.fabGradient,
                       shape: BoxShape.circle),
                   child: IconButton(

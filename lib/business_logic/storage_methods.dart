@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'dart:math';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'image_upload_provider.dart';
-import 'message.dart';
-import 'user_model.dart';
+import 'providers/image_upload_provider.dart';
+import 'models/message.dart';
+import 'models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_me/business_logic/chat_methods.dart';
 
@@ -82,7 +80,6 @@ class StorageMethods {
   Future<File?> pickImage({required ImageSource source}) async {
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
-    int random = Random().nextInt(1000);
     print('Path $path');
     try {
       //imageQuality: 85,
