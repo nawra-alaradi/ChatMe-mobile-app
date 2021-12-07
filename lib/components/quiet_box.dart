@@ -12,7 +12,7 @@ class QuietBox extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 25.w),
         child: Container(
-          color: const Color(0xff272c35),
+          color: const Color(0xFFE1E2E1),
           padding: EdgeInsets.symmetric(vertical: 35.h, horizontal: 25.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,

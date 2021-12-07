@@ -31,41 +31,48 @@ class CustomTile extends StatelessWidget {
       onTap: onTap,
       onLongPress: onLongPress,
       child: Container(
+        height: 60.h,
+        width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.symmetric(horizontal: mini ? 10.w : 0),
         margin: margin,
-        child: Row(
-          children: <Widget>[
-            leading,
-            Expanded(
-              child: Container(
-                margin: EdgeInsets.only(left: mini ? 10.w : 15.w),
-                padding: EdgeInsets.symmetric(vertical: mini ? 3.h : 20.h),
-                decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                            width: 1.w, color: const Color(0xff272c35)))),
+        child: FittedBox(
+          child: Column(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 60.h,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        title,
-                        SizedBox(height: 5.h),
-                        Row(
-                          children: <Widget>[
-                            icon ?? Container(),
-                            subtitle ?? Container(),
-                          ],
-                        )
-                      ],
+                    leading,
+                    SizedBox(
+                      width: 15.w,
                     ),
-                    trailing ?? Container(),
+                    FittedBox(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              title,
+                              SizedBox(height: 5.h),
+                              subtitle ?? Container(),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
-            )
-          ],
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: Divider(
+                    thickness: 10.w,
+                    color: Colors.black,
+                  ))
+            ],
+          ),
         ),
       ),
     );

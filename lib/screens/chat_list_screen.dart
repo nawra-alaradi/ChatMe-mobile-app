@@ -32,14 +32,6 @@ class ChatListScreen extends StatelessWidget {
             Navigator.pushNamed(context, SearchScreen.id);
           },
         ),
-        IconButton(
-          icon: Icon(
-            Icons.more_vert,
-            color: Colors.white,
-            size: 25.w,
-          ),
-          onPressed: () {},
-        ),
       ],
     );
   }

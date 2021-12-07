@@ -6,10 +6,13 @@ class Utils {
   }
 
   static String getInitials(String? name) {
+    String lastNameInitial = "";
     if (name != null) {
       List<String> nameSplit = name.split(" ");
       String firstNameInitial = nameSplit[0][0];
-      String lastNameInitial = nameSplit[1][0];
+      if (nameSplit.length > 1) {
+        lastNameInitial = nameSplit[1][0];
+      }
       return firstNameInitial + lastNameInitial;
     } else {
       return "";

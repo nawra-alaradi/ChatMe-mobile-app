@@ -162,13 +162,17 @@ class _SearchScreenState extends State<SearchScreen> {
               // backgroundImage: NetworkImage(searchedUser.profilePhoto ?? ""),
               backgroundColor: Colors.amber,
             ),
-            title: Text(
-              searchedUser.name != null ? searchedUser.name!.toUpperCase() : "",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 25.sp,
-                  fontFamily: 'Work Sans'),
+            title: FittedBox(
+              child: Text(
+                searchedUser.name != null
+                    ? searchedUser.name!.toUpperCase()
+                    : "",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.sp,
+                    fontFamily: 'Work Sans'),
+              ),
             ),
             subtitle: null);
       }),
