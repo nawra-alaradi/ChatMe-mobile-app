@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'dart:developer' as dv;
 
 class FirebaseService {
   // bool _initialized = false;
@@ -11,7 +12,7 @@ class FirebaseService {
       // _initialized = true;
     } catch (e) {
       // Set `_error` state to true if Firebase initialization fails
-      print('error occured');
+      dv.log('error occured');
     }
   }
 }

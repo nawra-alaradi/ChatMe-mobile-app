@@ -11,8 +11,9 @@ class OnlineDotIndicator extends StatelessWidget {
   final AuthMethods _authMethods = AuthMethods();
 
   OnlineDotIndicator({
+    Key? key,
     required this.uid,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

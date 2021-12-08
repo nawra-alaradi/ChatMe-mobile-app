@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:chat_me/business_logic/chat_methods.dart';
-
+import 'dart:developer' as dv;
 import '../business_logic/providers/auth_provider.dart';
 import '../business_logic/models/user_model.dart';
 import 'package:chat_me/components/cached_image.dart';
@@ -37,7 +37,6 @@ class _ChatScreenState extends State<ChatScreen> {
   late ImageUploadProvider _imageUploadProvider;
 
   bool isWriting = false;
-  bool showEmojiPicker = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -51,7 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
     sender = Provider.of<AuthProvider>(context, listen: false).userModel;
     _currentUserId =
         Provider.of<AuthProvider>(context, listen: false).userModel.uid!;
-    print('current userid $_currentUserId');
+    dv.log('current userid $_currentUserId');
   }
 
   void pickImage({required ImageSource source}) async {
@@ -71,13 +70,13 @@ class _ChatScreenState extends State<ChatScreen> {
     final status = await Permission.camera.request();
 
     if (status == PermissionStatus.granted) {
-      print('Permission Granted');
+      dv.log('Permission Granted');
       return true;
     } else if (status == PermissionStatus.denied) {
-      print('Permission denied');
+      dv.log('Permission denied');
       return false;
     } else if (status == PermissionStatus.permanentlyDenied) {
-      print('Permission Permanently Denied');
+      dv.log('Permission Permanently Denied');
       return false;
     } else {
       return false;
@@ -88,13 +87,13 @@ class _ChatScreenState extends State<ChatScreen> {
     final status = await Permission.storage.request();
 
     if (status == PermissionStatus.granted) {
-      print('Permission Granted');
+      dv.log('Permission Granted');
       return true;
     } else if (status == PermissionStatus.denied) {
-      print('Permission denied');
+      dv.log('Permission denied');
       return false;
     } else if (status == PermissionStatus.permanentlyDenied) {
-      print('Permission Permanently Denied');
+      dv.log('Permission Permanently Denied');
       return false;
     } else {
       return false;
@@ -104,18 +103,6 @@ class _ChatScreenState extends State<ChatScreen> {
   showKeyboard() => textFieldFocus.requestFocus();
 
   hideKeyboard() => textFieldFocus.unfocus();
-
-  hideEmojiContainer() {
-    setState(() {
-      showEmojiPicker = false;
-    });
-  }
-
-  showEmojiContainer() {
-    setState(() {
-      showEmojiPicker = true;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -342,7 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     sendMessage() async {
       var text = textFieldController.text;
-      print(text);
+      dv.log(text);
       Message _message = Message(
           receiverId: widget.receiver.uid ?? "",
           senderId: sender!.uid ?? "",
@@ -386,7 +373,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 TextField(
                   controller: textFieldController,
                   focusNode: textFieldFocus,
-                  onTap: () => hideEmojiContainer(),
+                  onTap: () => {},
                   style: TextStyle(color: Colors.white, fontSize: 18.sp),
                   onChanged: (val) {
                     (val.isNotEmpty && val.trim() != "")

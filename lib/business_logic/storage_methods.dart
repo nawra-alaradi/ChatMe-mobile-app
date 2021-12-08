@@ -7,6 +7,7 @@ import 'models/message.dart';
 import 'models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_me/business_logic/chat_methods.dart';
+import 'dart:developer' as dv;
 
 class StorageMethods {
   static final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -26,7 +27,7 @@ class StorageMethods {
           .putFile(imageFile);
       TaskSnapshot snapshot = await storageUploadTask;
       String url = await (await snapshot.ref.getDownloadURL());
-      print("This is the url $url");
+      dv.log("This is the url $url");
       // print(url);
       return url;
     } catch (e) {
@@ -80,14 +81,14 @@ class StorageMethods {
   Future<File?> pickImage({required ImageSource source}) async {
     final tempDir = await getTemporaryDirectory();
     final path = tempDir.path;
-    print('Path $path');
+    dv.log('Path $path');
     try {
       //imageQuality: 85,
       final image = await ImagePicker()
           .pickImage(source: source, maxWidth: 400, maxHeight: 400);
-      print('image is picked');
+      dv.log('image is picked');
       if (image == null) {
-        print('image is null');
+        dv.log('image is null');
         return null;
       } else {
         //$path/image_$random.jpg
@@ -96,7 +97,7 @@ class StorageMethods {
         return File(image.path);
       }
     } catch (e) {
-      print('Failed to pick image $e');
+      dv.log('Failed to pick image ${e.toString()}');
     }
   }
 }

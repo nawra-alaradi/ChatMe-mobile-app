@@ -2,7 +2,6 @@ import 'package:chat_me/business_logic/chat_methods.dart';
 import 'package:chat_me/business_logic/models/contact_model.dart';
 import 'package:chat_me/business_logic/models/user_model.dart';
 import 'package:chat_me/business_logic/providers/auth_provider.dart';
-import 'package:chat_me/components/cached_image.dart';
 import 'package:chat_me/components/custom_tile.dart';
 import 'package:chat_me/components/last_message_container.dart';
 import 'package:chat_me/screens/chat_screen.dart';

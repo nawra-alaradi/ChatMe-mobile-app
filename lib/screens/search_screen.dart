@@ -18,7 +18,6 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final _auth = FirebaseAuth.instance;
   List<ChatUser> chatUsers = [];
   String query = "";
   TextEditingController searchController = TextEditingController();

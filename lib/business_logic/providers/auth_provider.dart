@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:developer' as dv;
 
 class AuthProvider with ChangeNotifier {
   final CollectionReference _userCollection =
@@ -25,22 +26,22 @@ class AuthProvider with ChangeNotifier {
       if (_user != null && _user!.emailVerified) {
         retVal = "success";
         final String uid = _user!.uid;
-        print('User uid is $uid');
+        dv.log('User uid is $uid');
         DocumentSnapshot documentDetails = await _userCollection.doc(uid).get();
-        print(documentDetails.data());
+        // print(documentDetails.data());
         _chatUser = ChatUser(
             uid: _user!.uid,
             name: documentDetails['name'],
             gender: documentDetails['gender'],
             email: documentDetails['email']);
-        print('name: ${_chatUser.name}');
-        print('gender: ${_chatUser.gender}');
-        print('email: ${_chatUser.email}');
-        print("${_chatUser.name} is already logged In");
+        dv.log('name: ${_chatUser.name}');
+        dv.log('gender: ${_chatUser.gender}');
+        dv.log('email: ${_chatUser.email}');
+        dv.log("${_chatUser.name} is already logged In");
         notifyListeners();
       }
     } catch (e) {
-      print(e.toString());
+      dv.log(e.toString());
     }
     return retVal;
   }
@@ -58,7 +59,7 @@ class AuthProvider with ChangeNotifier {
           if (_user != null) {
             //user has verified his email
             final String uid = _user!.uid;
-            print('User uid is $uid');
+            dv.log('User uid is $uid');
             DocumentSnapshot documentDetails =
                 await _userCollection.doc(uid).get();
             print(documentDetails.data());
@@ -67,19 +68,19 @@ class AuthProvider with ChangeNotifier {
                 name: documentDetails['name'],
                 gender: documentDetails['gender'],
                 email: documentDetails['email']);
-            print('name: ${_chatUser.name}');
-            print('gender: ${_chatUser.gender}');
-            print('email: ${_chatUser.email}');
+            dv.log('name: ${_chatUser.name}');
+            dv.log('gender: ${_chatUser.gender}');
+            dv.log('email: ${_chatUser.email}');
             notifyListeners(); //inform listeners about the  user details
             return 'signed in successfully';
           }
         }
       } on FirebaseAuthException catch (e) {
-        print('part1 is caught with error ${e.toString()}');
-        print(e.toString());
+        dv.log('part1 is caught with error ${e.toString()}');
+        dv.log(e.toString());
         return 'Invalid password';
       } catch (e) {
-        print('part2 is caught with error ${e.toString()}');
+        dv.log('part2 is caught with error ${e.toString()}');
         return 'Unverified email';
       }
       return 'sth wrong';
@@ -103,7 +104,7 @@ class AuthProvider with ChangeNotifier {
         await _user!.sendEmailVerification();
       }
       //create a new document inside users collection with the user credentials
-      print('this part is being executed');
+      dv.log('this part is being executed');
       await _userCollection.doc(_user!.uid).set({
         'uid': _user!.uid,
         'name': name,
@@ -114,7 +115,7 @@ class AuthProvider with ChangeNotifier {
         'createdOn': FieldValue.serverTimestamp()
         // ignore: invalid_return_type_for_catch_error
       }).catchError((onError) {
-        print('failed to add the patient $onError');
+        dv.log('failed to add the patient $onError');
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -123,7 +124,7 @@ class AuthProvider with ChangeNotifier {
         return 'An account already exists for this email.';
       }
     } catch (e) {
-      print(e);
+      dv.log(e.toString());
       return e.toString();
     }
     //todo: sign the user out to enforce email verificaton
@@ -136,7 +137,7 @@ class AuthProvider with ChangeNotifier {
     try {
       return await _auth.signOut();
     } catch (error) {
-      print(error.toString());
+      dv.log(error.toString());
       return null;
     }
   }
@@ -168,7 +169,7 @@ class AuthProvider with ChangeNotifier {
       DocumentSnapshot documentSnapshot = await _userCollection.doc(id).get();
       return ChatUser.fromMap(documentSnapshot.data() as Map<String, dynamic>);
     } catch (e) {
-      print(e);
+      dv.log(e.toString());
       return ChatUser(uid: "", name: "", gender: "", email: "");
     }
   }
